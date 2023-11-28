@@ -14,13 +14,11 @@ void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FStr
 	MatchType = TypeOfMatch;
 	AddToViewport();
 	SetVisibility(ESlateVisibility::Visible);
-	bIsFocusable = true;
+	SetIsFocusable(true);
 
-	UWorld* World = GetWorld();
-	if (World)
+	if (const UWorld* World = GetWorld())
 	{
-		APlayerController* PlayerController = World->GetFirstPlayerController();
-		if (PlayerController)
+		if (APlayerController* PlayerController = World->GetFirstPlayerController())
 		{
 			FInputModeUIOnly InputModeData;
 			InputModeData.SetWidgetToFocus(TakeWidget());
@@ -30,8 +28,7 @@ void UMenu::MenuSetup(int32 NumberOfPublicConnections, FString TypeOfMatch, FStr
 		}
 	}
 
-	UGameInstance* GameInstance = GetGameInstance();
-	if (GameInstance)
+	if (const UGameInstance* GameInstance = GetGameInstance())
 	{
 		MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
 	}
@@ -71,12 +68,12 @@ void UMenu::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UMenu::OnCreateSession(bool bWasSuccessful)
+// ReSharper disable once CppMemberFunctionMayBeConst Needs to be non-const for the delegate
+void UMenu::OnCreateSession(const bool bWasSuccessful)
 {
 	if (bWasSuccessful)
 	{
-		UWorld* World = GetWorld();
-		if (World)
+		if (UWorld* World = GetWorld())
 		{
 			World->ServerTravel(PathToLobby);
 		}
@@ -96,7 +93,7 @@ void UMenu::OnCreateSession(bool bWasSuccessful)
 	}
 }
 
-void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
+void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, const bool bWasSuccessful) const
 {
 	if (MultiplayerSessionsSubsystem == nullptr)
 	{
@@ -119,19 +116,16 @@ void UMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResu
 	}
 }
 
-void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
+void UMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result) const
 {
-	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
-	if (Subsystem)
+	if (const IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
 	{
-		IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface();
-		if (SessionInterface.IsValid())
+		if (const IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface(); SessionInterface.IsValid())
 		{
 			FString Address;
 			SessionInterface->GetResolvedConnectString(NAME_GameSession, Address);
 
-			APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
-			if (PlayerController)
+			if (APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController())
 			{
 				PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 			}
@@ -168,13 +162,11 @@ void UMenu::JoinButtonClicked()
 void UMenu::MenuTearDown()
 {
 	RemoveFromParent();
-	UWorld* World = GetWorld();
-	if (World)
+	if (const UWorld* World = GetWorld())
 	{
-		APlayerController* PlayerController = World->GetFirstPlayerController();
-		if (PlayerController)
+		if (APlayerController* PlayerController = World->GetFirstPlayerController())
 		{
-			FInputModeGameOnly InputModeData;
+			const FInputModeGameOnly InputModeData;
 			PlayerController->SetInputMode(InputModeData);
 			PlayerController->SetShowMouseCursor(false);
 		}

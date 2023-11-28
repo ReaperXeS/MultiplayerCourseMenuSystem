@@ -1,11 +1,11 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
+	"VersionName": "1.1",
 	"FriendlyName": "MultiplayerSessions",
 	"Description": "A plugin for handling online multiplayer sessions",
 	"Category": "Other",
-	"CreatedBy": "Stephen Ulibarri",
+	"CreatedBy": "Reaper XeS",
 	"CreatedByURL": "",
 	"DocsURL": "",
 	"MarketplaceURL": "",
